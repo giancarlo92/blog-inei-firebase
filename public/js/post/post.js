@@ -1,19 +1,86 @@
 class Post {
   constructor () {
       // TODO inicializar firestore y settings
-
+    this.db = firebase.firestore()
   }
 
   crearPost (uid, emailUser, titulo, descripcion, imagenLink, videoLink) {
-    
+    return this.db
+            .collection("posts")
+            .add({
+                //izquierdo (nombre del campo en firestore) : derecho (variable que pasamos como parametro)
+                uid,
+                correo: emailUser,
+                // tanto el nombre del campo en firestore como variable tienen el mismo nombre
+                titulo,
+                descripcion,
+                imagenLink,
+                videoLink,
+                fecha: firebase.firestore.FieldValue.serverTimestamp() //nos coloca la fecha actual
+            })
+            .then(refDoc => {
+                console.log(`Id del post ${refDoc.id}`);
+            })
+            .catch(error => {
+                console.log(`error creando el post ${error.message}`);
+            })
   }
 
   consultarTodosPost () {
-    
+    this
+        .db
+        .collection("posts")
+        // funcion que hace el realtime
+        .onSnapshot(querySnapshot => {
+            $("#posts").empty()
+            //querySnapshot.empty -> pregunta si esta vacio la lista
+            if(querySnapshot.empty){
+                $("#posts").append(this.obtenerTemplatePostVacio())
+            } 
+            // si encuentra al menos un registro
+            else{
+                //forEach: nos sirve para recorrer todos los datos de la lista
+                querySnapshot.forEach(post => {
+                    let postHtml = this.obtenerPostTemplate(
+                        post.data().correo,
+                        post.data().titulo,
+                        post.data().descripcion,
+                        post.data().videoLink,
+                        post.data().imagenLink,
+                        Utilidad.obtenerFecha(post.data().fecha.toDate()) //segundos 42342342342
+                    )
+                    $("#posts").append(postHtml)
+                })
+            }
+        })
   }
 
   consultarPostxUsuario (emailUser) {
-    
+    this
+        .db
+        .collection("posts")
+        .where("correo", "==", emailUser)
+        .onSnapshot(querySnapshot => {
+            $("#posts").empty()
+            if(querySnapshot.empty){
+                $("#posts").append(this.obtenerTemplatePostVacio())
+            } 
+            // si encuentra al menos un registro
+            else{
+                //forEach: nos sirve para recorrer todos los datos de la lista
+                querySnapshot.forEach(post => {
+                    let postHtml = this.obtenerPostTemplate(
+                        post.data().correo,
+                        post.data().titulo,
+                        post.data().descripcion,
+                        post.data().videoLink,
+                        post.data().imagenLink,
+                        Utilidad.obtenerFecha(post.data().fecha.toDate()) //segundos 42342342342
+                    )
+                    $("#posts").append(postHtml)
+                })
+            }
+        })
   }
 
   obtenerTemplatePostVacio () {
