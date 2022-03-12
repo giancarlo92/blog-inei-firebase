@@ -18,17 +18,40 @@ $(() => {
   // TODO: Listening real time
 
   // TODO: Firebase observador del cambio de estado
-  //$('#btnInicioSesion').text('Salir')
-  //$('#avatar').attr('src', user.photoURL)
-  //$('#avatar').attr('src', 'imagenes/usuario_auth.png')
-  //$('#btnInicioSesion').text('Iniciar Sesión')
-  //$('#avatar').attr('src', 'imagenes/usuario.png')
+  firebase
+    .auth()
+    // pregunta si la sesión ha cambiado (si esta logueado o no)
+    .onAuthStateChanged(user => {
+      if(user){
+        $('#btnInicioSesion').text('Salir')
+        // error que sucede cuando se loguea, a veces no trae foto.
+        if(user.photoURL){
+          $('#avatar').attr('src', user.photoURL)
+        } else{
+          $('#avatar').attr('src', 'imagenes/usuario_auth.png')
+        }
+      } else {
+        $('#btnInicioSesion').text('Iniciar Sesión')
+        $('#avatar').attr('src', 'imagenes/usuario.png')
+      }
+  })
 
   // TODO: Evento boton inicio sesion
-  $('#btnInicioSesion').click(() => {
-    //$('#avatar').attr('src', 'imagenes/usuario.png')
-    // Materialize.toast(`Error al realizar SignOut => ${error}`, 4000)
-    
+  $('#btnInicioSesion').click(() => { 
+    const user = firebase.auth().currentUser // obtiene el usuario logueado
+    if(user){
+      $('#btnInicioSesion').text("Iniciar sesión")
+      return firebase
+              .auth()
+              .signOut()
+              .then(() => {
+                $('#avatar').attr('src', 'imagenes/usuario.png')
+                Materialize.toast(`Se cerró la sesión correctamente`, 4000)
+              })
+              .catch(error => {
+                Materialize.toast(`Error al realizar SignOut => ${error.message}`, 4000)
+              })
+    }
 
     $('#emailSesion').val('')
     $('#passwordSesion').val('')
