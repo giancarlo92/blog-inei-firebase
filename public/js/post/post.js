@@ -30,6 +30,8 @@ class Post {
     this
         .db
         .collection("posts")
+        .orderBy("fecha", "asc")
+        .orderBy("titulo", "asc")
         // funcion que hace el realtime
         .onSnapshot(querySnapshot => {
             $("#posts").empty()
@@ -42,12 +44,13 @@ class Post {
                 //forEach: nos sirve para recorrer todos los datos de la lista
                 querySnapshot.forEach(post => {
                     let postHtml = this.obtenerPostTemplate(
-                        post.data().correo,
-                        post.data().titulo,
-                        post.data().descripcion,
-                        post.data().videoLink,
-                        post.data().imagenLink,
-                        Utilidad.obtenerFecha(post.data().fecha.toDate()) //segundos 42342342342
+                        // post.data() == undefined ? null : post.data().correo
+                        post.data()?.correo,
+                        post.data()?.titulo,
+                        post.data()?.descripcion,
+                        post.data()?.videoLink,
+                        post.data()?.imagenLink,
+                        Utilidad.obtenerFecha(post.data().fecha?.toDate()) //segundos 42342342342
                     )
                     $("#posts").append(postHtml)
                 })
@@ -60,6 +63,7 @@ class Post {
         .db
         .collection("posts")
         .where("correo", "==", emailUser)
+        .orderBy("fecha", "asc")
         .onSnapshot(querySnapshot => {
             $("#posts").empty()
             if(querySnapshot.empty){
@@ -70,12 +74,12 @@ class Post {
                 //forEach: nos sirve para recorrer todos los datos de la lista
                 querySnapshot.forEach(post => {
                     let postHtml = this.obtenerPostTemplate(
-                        post.data().correo,
-                        post.data().titulo,
-                        post.data().descripcion,
-                        post.data().videoLink,
-                        post.data().imagenLink,
-                        Utilidad.obtenerFecha(post.data().fecha.toDate()) //segundos 42342342342
+                        post.data()?.correo,
+                        post.data()?.titulo,
+                        post.data()?.descripcion,
+                        post.data()?.videoLink,
+                        post.data()?.imagenLink,
+                        Utilidad.obtenerFecha(post.data().fecha?.toDate()) //segundos 42342342342
                     )
                     $("#posts").append(postHtml)
                 })
