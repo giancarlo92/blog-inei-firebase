@@ -192,4 +192,33 @@ class Post {
                 </div>
             </article>`
   }
+
+  subirImagenPost(file, uid){
+      const storage = firebase.storage()
+    // firebase verifica si existe la ruta sino la crea
+    // uid : usuario
+      const referenceStorage = storage.ref(`imagenPost/${uid}/${file?.name}`)
+      const task = referenceStorage.put(file)
+
+    // tarea que se ejecuta cuando se carga el archivo
+    task.on('state_changed', snapshot => {
+        // porcentaje actual de la subida del archivo - 0 30 60 100
+        const porcentaje = snapshot.bytesTransferred / snapshot.totalBytes * 100
+        $(".determinate").attr("style", `width: ${porcentaje}%`)
+    },
+    error => {
+        Materialize.toast(`Error subiendo archivo => ${error.message}`, 4000)
+    },
+    //funcion que se ejecuta una vez se complete la subida
+    () => {
+        task.snapshot.ref.getDownloadURL()
+            .then(url => {
+                console.log(url);
+                sessionStorage.setItem('imgNewPost', url)
+            })
+            .catch (error => {
+                Materialize.toast(`Error obteniendo URL => ${error.message}`, 4000)
+            })
+    })  
+  }
 }
