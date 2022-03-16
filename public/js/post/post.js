@@ -194,6 +194,11 @@ class Post {
   }
 
   subirImagenPost(file, uid){
+    if(file.size > 5 * 1024 * 1024){
+        Materialize.toast(`No se puede subir este archivo porque pesa más de 5MB`, 4000)
+        return
+    }
+
       const storage = firebase.storage()
     // firebase verifica si existe la ruta sino la crea
     // uid : usuario
@@ -208,6 +213,7 @@ class Post {
     },
     error => {
         Materialize.toast(`Error subiendo archivo => ${error.message}`, 4000)
+        $(".determinate").attr("style", `width: 0%`)
     },
     //funcion que se ejecuta una vez se complete la subida
     () => {
@@ -218,6 +224,7 @@ class Post {
             })
             .catch (error => {
                 Materialize.toast(`Error obteniendo URL => ${error.message}`, 4000)
+                $(".determinate").attr("style", `width: 0%`)
             })
     })  
   }
