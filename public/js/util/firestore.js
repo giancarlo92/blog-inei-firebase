@@ -88,11 +88,10 @@ class PostDAO {
       this.db.collection('posts').doc(id).delete()
     }
   
-    querySingle (id) {
+    async querySingle (id) {
       let ref = this.db.collection('posts').doc(id)
-      ref.get().then(respDoc => {
-        console.log(`querySingle postID ${id} => ${respDoc.data().titulo}`)
-      })
+      const respDoc = await ref.get()
+      return respDoc
     }
   
     queryByTitulo (titulo) {

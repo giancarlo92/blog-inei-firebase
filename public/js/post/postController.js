@@ -1,9 +1,13 @@
 $(() => {
   $('#btnModalPost').click(() => {
+    $("#idEdit").val('')
     $('#tituloNewPost').val('')
     $('#descripcionNewPost').val('')
     $('#linkVideoNewPost').val('')
     $('#btnUploadFile').val('')
+    $("#imagen-subida").attr("style", "display: none;")
+    $("#imagen-subida").attr("src", "")
+    $("#btnRegistroPost").text("Crear Post")
     $('.determinate').attr('style', `width: 0%`)
     sessionStorage.setItem('imgNewPost', null)
 
@@ -36,7 +40,9 @@ $(() => {
       ? null
       : sessionStorage.getItem('imgNewPost')
 
-    post
+    const idEdit = $("#idEdit").val()
+    if(idEdit == ''){
+      post
       .crearPost(
         user.uid,
         user.email,
@@ -52,6 +58,27 @@ $(() => {
       .catch(err => {
         Materialize.toast(`Error => ${err}`, 4000)
       })
+    }
+    else{
+      post
+      .editarPost(
+        idEdit,
+        user.uid,
+        user.email,
+        titulo,
+        descripcion,
+        imagenLink,
+        videoLink
+      )
+      .then(resp => {
+        Materialize.toast(`Post modificado correctamente`, 4000)
+        $('.modal').modal('close')
+      })
+      .catch(err => {
+        Materialize.toast(`Error => ${err}`, 4000)
+      })
+    }
+    
   })
 
   $('#btnUploadFile').on('change', e => {
@@ -69,3 +96,26 @@ $(() => {
     post.subirImagenPost(file, user?.uid)
   })
 })
+
+async function editPost(id){
+  const postDao = new PostDAO()
+  const resp = await postDao.querySingle(id)
+  
+  $("#idEdit").val(id)
+  $("#tituloNewPost").val(resp.data()?.titulo)
+  $("#descripcionNewPost").val(resp.data()?.descripcion)
+  $("#linkVideoNewPost").val(resp.data()?.videoLink)
+  $('.determinate').attr('style', `width: 100%`)
+  $("#imagen-subida").attr("style", "display: block;")
+  $("#imagen-subida").attr("src", resp.data()?.imagenLink)
+  sessionStorage.setItem('imgNewPost', resp.data()?.imagenLink)
+
+  $("#btnRegistroPost").text("Editar Post")
+
+  $('#modalPost').modal('open')
+
+  $("#tituloNewPost").focus()
+  $("#descripcionNewPost").focus()
+  $("#linkVideoNewPost").focus()
+
+}

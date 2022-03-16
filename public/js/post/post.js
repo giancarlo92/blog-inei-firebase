@@ -26,6 +26,23 @@ class Post {
             })
   }
 
+  editarPost (id, uid, emailUser, titulo, descripcion, imagenLink, videoLink) {
+    let refPost = this.db.collection("posts").doc(id)
+
+    return refPost.update({
+        uid,
+        correo: emailUser,
+        titulo,
+        descripcion,
+        imagenLink,
+        videoLink,
+        fecha: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .catch(error => {
+        console.log(`error editando el post ${error.message}`);
+    })
+  }
+
   consultarTodosPost () {
     this
         .db
@@ -50,7 +67,8 @@ class Post {
                         post.data()?.descripcion,
                         post.data()?.videoLink,
                         post.data()?.imagenLink,
-                        Utilidad.obtenerFecha(post.data().fecha?.toDate()) //segundos 42342342342
+                        Utilidad.obtenerFecha(post.data().fecha?.toDate()), //segundos 42342342342
+                        null
                     )
                     $("#posts").append(postHtml)
                 })
@@ -79,7 +97,8 @@ class Post {
                         post.data()?.descripcion,
                         post.data()?.videoLink,
                         post.data()?.imagenLink,
-                        Utilidad.obtenerFecha(post.data().fecha?.toDate()) //segundos 42342342342
+                        Utilidad.obtenerFecha(post.data().fecha?.toDate()), //segundos 42342342342
+                        post?.id
                     )
                     $("#posts").append(postHtml)
                 })
@@ -121,76 +140,89 @@ class Post {
     descripcion,
     videoLink,
     imagenLink,
-    fecha
+    fecha,
+    id
   ) {
-    if (imagenLink) {
-      return `<article class="post">
-            <div class="post-titulo">
-                <h5>${titulo}</h5>
-            </div>
-            <div class="post-calificacion">
-                <a class="post-estrellita-llena" href="*"></a>
-                <a class="post-estrellita-llena" href="*"></a>
-                <a class="post-estrellita-llena" href="*"></a>
-                <a class="post-estrellita-llena" href="*"></a>
-                <a class="post-estrellita-vacia" href="*"></a>
-            </div>
-            <div class="post-video">                
-                <img id="imgVideo" src='${imagenLink}' class="post-imagen-video" 
-                    alt="Imagen Video">     
-            </div>
-            <div class="post-videolink">
-                <a href="${videoLink}" target="blank">Ver Video</a>                            
-            </div>
-            <div class="post-descripcion">
-                <p>${descripcion}</p>
-            </div>
-            <div class="post-footer container">
-                <div class="row">
-                    <div class="col m6">
-                        Fecha: ${fecha}
-                    </div>
-                    <div class="col m6">
-                        Autor: ${autor}
-                    </div>        
-                </div>
-            </div>
-        </article>`
+    
+    let botonesAccion = ""
+    if(id != null){
+        botonesAccion = /*html*/`<div class="col m6 right-align" style="padding-right: 15px;">
+            <a class="btn-floating waves-effect waves-light btnPpal" onclick="editPost('${id}')"><i class="material-icons">edit</i></a>
+            <a class="btn-floating waves-effect waves-light red"><i class="material-icons">delete</i></a>
+        </div>`
     }
 
-    return `<article class="post">
-                <div class="post-titulo">
-                    <h5>${titulo}</h5>
-                </div>
-                <div class="post-calificacion">
-                    <a class="post-estrellita-llena" href="*"></a>
-                    <a class="post-estrellita-llena" href="*"></a>
-                    <a class="post-estrellita-llena" href="*"></a>
-                    <a class="post-estrellita-llena" href="*"></a>
-                    <a class="post-estrellita-vacia" href="*"></a>
-                </div>
-                <div class="post-video">
-                    <iframe type="text/html" width="500" height="385" src='${videoLink}'
-                        frameborder="0"></iframe>
-                    </figure>
-                </div>
-                <div class="post-videolink">
-                    Video
-                </div>
-                <div class="post-descripcion">
-                    <p>${descripcion}</p>
-                </div>
-                <div class="post-footer container">
-                    <div class="row">
-                        <div class="col m6">
-                            Fecha: ${fecha}
-                        </div>
-                        <div class="col m6">
-                            Autor: ${autor}
-                        </div>        
+
+    if (imagenLink) {
+      return /*html*/`<article class="post">
+                    <div class="post-titulo">
+                        <h5>${titulo}</h5>
                     </div>
-                </div>
-            </article>`
+                    <div class="post-calificacion">
+                        <a class="post-estrellita-llena" href="*"></a>
+                        <a class="post-estrellita-llena" href="*"></a>
+                        <a class="post-estrellita-llena" href="*"></a>
+                        <a class="post-estrellita-llena" href="*"></a>
+                        <a class="post-estrellita-vacia" href="*"></a>
+                    </div>
+                    <div class="post-video">                
+                        <img id="imgVideo" src='${imagenLink}' class="post-imagen-video" 
+                            alt="Imagen Video">     
+                    </div>
+                    <div class="post-videolink">
+                        <a href="${videoLink}" target="blank">Ver Video</a>                            
+                    </div>
+                    <div class="post-descripcion">
+                        <p>${descripcion}</p>
+                    </div>
+                    <div class="post-footer container">
+                        <div class="row">
+                            <div class="col m6">
+                                Fecha: ${fecha}
+                            </div>
+                            ${botonesAccion}
+                            <div class="col m6">
+                                Autor: ${autor}
+                            </div>        
+                        </div>
+                    </div>
+                </article>`
+    }
+
+    return /*html*/`<article class="post">
+                        <div class="post-titulo">
+                            <h5>${titulo}</h5>
+                        </div>
+                        <div class="post-calificacion">
+                            <a class="post-estrellita-llena" href="*"></a>
+                            <a class="post-estrellita-llena" href="*"></a>
+                            <a class="post-estrellita-llena" href="*"></a>
+                            <a class="post-estrellita-llena" href="*"></a>
+                            <a class="post-estrellita-vacia" href="*"></a>
+                        </div>
+                        <div class="post-video">
+                            <iframe type="text/html" width="500" height="385" src='${videoLink}'
+                                frameborder="0"></iframe>
+                            </figure>
+                        </div>
+                        <div class="post-videolink">
+                            Video
+                        </div>
+                        <div class="post-descripcion">
+                            <p>${descripcion}</p>
+                        </div>
+                        <div class="post-footer container">
+                            <div class="row">
+                                <div class="col m6">
+                                    Fecha: ${fecha}
+                                </div>
+                                ${botonesAccion}
+                                <div class="col m6">
+                                    Autor: ${autor}
+                                </div>        
+                            </div>
+                        </div>
+                    </article>`
   }
 
   subirImagenPost(file, uid){
@@ -221,6 +253,8 @@ class Post {
             .then(url => {
                 console.log(url);
                 sessionStorage.setItem('imgNewPost', url)
+                $("#imagen-subida").attr("style", "display: block;")
+                $("#imagen-subida").attr("src", url)
             })
             .catch (error => {
                 Materialize.toast(`Error obteniendo URL => ${error.message}`, 4000)
