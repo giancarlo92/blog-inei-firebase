@@ -95,6 +95,27 @@ $(() => {
     const post = new Post()
     post.subirImagenPost(file, user?.uid)
   })
+
+  $("#eliminar-post-no").click(() => {
+    $('#modalEliminarPost').modal('close')
+  })
+
+  $("#eliminar-post-si").click(() => {
+    const idPost = $("#idPost").val()
+    const postDao = new PostDAO()
+    postDao.delete(idPost)
+
+    $('#modalEliminarPost').modal('close')
+    Materialize.toast(`El registro fue eliminado`, 4000)
+  })
+
+  $("#texto-busqueda").on("keyup", () => {
+    const busqueda = $("#texto-busqueda").val()
+    if(busqueda.length > 2){
+      const post = new Post()
+      post.obtenerDesplegableBusqueda(busqueda)
+    }
+  })
 })
 
 async function editPost(id){
@@ -117,5 +138,20 @@ async function editPost(id){
   $("#tituloNewPost").focus()
   $("#descripcionNewPost").focus()
   $("#linkVideoNewPost").focus()
+
+}
+
+function deletePost(id){
+  $("#idPost").val(id);
+  $('#modalEliminarPost').modal('open')
+}
+
+async function seleccionado(id){
+  $("#texto-busqueda").val('')
+  $("#data-encontrada").empty()
+  const postDao = new PostDAO()
+  const resp = await postDao.querySingle(id) 
+  const post = new Post()
+  post.colocarPostSeleccionado(resp)
 
 }

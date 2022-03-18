@@ -106,6 +106,20 @@ class Post {
         })
   }
 
+  colocarPostSeleccionado(post){
+    $("#posts").empty()
+    let postHtml = this.obtenerPostTemplate(
+        post.data()?.correo,
+        post.data()?.titulo,
+        post.data()?.descripcion,
+        post.data()?.videoLink,
+        post.data()?.imagenLink,
+        Utilidad.obtenerFecha(post.data().fecha?.toDate()), //segundos 42342342342
+        post?.id
+    )
+    $("#posts").append(postHtml)
+  }
+
   obtenerTemplatePostVacio () {
     return `<article class="post">
       <div class="post-titulo">
@@ -148,7 +162,7 @@ class Post {
     if(id != null){
         botonesAccion = /*html*/`<div class="col m6 right-align" style="padding-right: 15px;">
             <a class="btn-floating waves-effect waves-light btnPpal" onclick="editPost('${id}')"><i class="material-icons">edit</i></a>
-            <a class="btn-floating waves-effect waves-light red"><i class="material-icons">delete</i></a>
+            <a class="btn-floating waves-effect waves-light red" onclick="deletePost('${id}')"><i class="material-icons">delete</i></a>
         </div>`
     }
 
@@ -261,5 +275,25 @@ class Post {
                 $(".determinate").attr("style", `width: 0%`)
             })
     })  
+  }
+
+  obtenerDesplegableBusqueda(busqueda){
+      this
+        .db
+        .collection("posts")
+        // LIKE SQL
+        .where("titulo", ">=", busqueda)
+        .where("titulo", "<=", busqueda + "\uf8ff")
+        .limit(3)
+        .get()
+        .then(query => {
+            $("#data-encontrada").empty()
+            if(!query.empty){
+                query.forEach(post => {
+                    let postHtml = /*html*/`<li onclick="seleccionado('${post?.id}')">${post.data()?.titulo}</li>`
+                    $("#data-encontrada").append(postHtml)
+                })
+            }
+        })
   }
 }
