@@ -26,7 +26,7 @@
             <a id="btnInicioSesion" class="modal-trigger waves-effect waves-light btn btnPpal">Iniciar Sesión</a>
             <figure class="header-avatar">
                 <img id="avatar" src="imagenes/usuario.png" alt="Avatar">
-                <span style="display: none;" class="verResumen"><a href="#">Ver Resumen</a></span>
+                <span style="display: none;" class="nombrePerfil">Prueba</span>
             </figure>
     </header>
     <div class="navbar">
@@ -273,6 +273,11 @@
             <div class="card horizontal" style="margin: 0;">
                 <div class="card-stacked">
                     <div class="card-content">
+                        <input type="hidden" id="idPerfil" value="">
+                        <div class="input-field">
+                            <input type="text" id="nombrePerfil" maxlength="50">
+                            <label for="nombrePerfil">Nombres:</label>
+                        </div>
                         <div class="progress-panel">
                             <label for="btnUploadFile">Foto:</label>
                             <input type="file" value="upload" id="btnSubirPerfil" />
@@ -281,6 +286,9 @@
                                 <div class="determinate" style="width: 0%"></div>
                             </div>
                         </div>
+                    </div>
+                    <div class="card-action" style="text-align: center;">
+                        <button class="btn btn-success" id="guardar-perfil">Guardar</button>
                     </div>
                 </div>
             </div>

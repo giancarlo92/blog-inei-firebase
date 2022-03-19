@@ -507,8 +507,9 @@ label
   color: white;
 }
 
-.verResumen {
-  position: relative;
-  top: 8rem;
-  right: 6rem;
+.nombrePerfil {
+  position: absolute;
+  top: 140px;
+  width: 80px;
+  text-align: center;
 }

@@ -98,11 +98,7 @@ $(() => {
 
   $("#btnSubirPerfil").on('change', e => {
     const user = firebase.auth().currentUser
-    if(!user){
-      Materialize.toast(`Para crear el post debes estar autenticado`, 4000)
-      return
-    }
-
+    
     const file = e.target.files[0]
 
     // TODO: Referencia al storage
@@ -130,6 +126,27 @@ $(() => {
       const post = new Post()
       post.obtenerDesplegableBusqueda(busqueda)
     }
+  })
+
+  $("#guardar-perfil").click(() => {
+
+    const user = firebase.auth().currentUser
+
+    const idPerfil = $("#idPerfil").val()
+
+    const nombres = $("#nombrePerfil").val()
+
+    const imagenLink = sessionStorage.getItem('imgPerfil') == 'null'
+      ? null
+      : sessionStorage.getItem('imgPerfil')
+
+     $("#avatar").attr("src", imagenLink) 
+
+     const post = new Post()
+     post.guardarFotoPerfil(idPerfil, user.uid, nombres, imagenLink)
+
+     $("#modalEditarPerfil").modal('close')
+
   })
 })
 

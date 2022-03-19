@@ -21,7 +21,16 @@ $(() => {
     $("#avatar").click(() => {
         // const auth = new Autenticacion
         // auth.cerrarSesion()
+
+        const user = firebase.auth().currentUser
+        if(!user){
+            Materialize.toast(`Inicia sesión para modificar tu perfil`, 4000)
+            return
+        }
+          
         $("#modalEditarPerfil").modal('open')
+
+        $("#nombrePerfil").focus()
     })
 
     $("#authGoogle").click(() => {

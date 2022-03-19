@@ -35,9 +35,16 @@ $(() => {
         } else{
           $('#avatar').attr('src', 'imagenes/usuario_auth.png')
         }
+
+        // setTimeout(() => {
+        //   $('#btnInicioSesion').click()
+        // }, 10000); //tiempo de expiracion en milisegundos
       } else {
         $('#btnInicioSesion').text('Iniciar Sesión')
         $('#avatar').attr('src', 'imagenes/usuario.png')
+
+        $(".nombrePerfil").attr("style", "display: none;")
+        $(".nombrePerfil").text('')
       }
   })
 

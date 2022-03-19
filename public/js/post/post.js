@@ -267,9 +267,9 @@ class Post {
             .then(url => {
                 console.log(url);
                 if(esPerfil){
-                    $('#avatar').attr('src', url)
-                    // $("modalEditarPerfil").modal("close")
-                    this.guardarFotoPerfil(url, uid)
+                    sessionStorage.setItem('imgPerfil', url)
+                    $("#imagen-perfil").attr("style", "display: block;")
+                    $("#imagen-perfil").attr("src", url)
                 }
                 else {
                     sessionStorage.setItem('imgNewPost', url)
@@ -285,16 +285,31 @@ class Post {
     })  
   }
 
-  guardarFotoPerfil(url, uid){
-    this.db
-    .collection('perfil')
-    .add({
-      uid,
-      foto: url
-    })
-    .then(docRef => {
-      console.log(`UID is => ${docRef.id}`)
-    })
+  guardarFotoPerfil(idPerfil, uid, nombres, foto){
+    if(idPerfil == ''){
+        this.db
+        .collection('perfil')
+        .add({
+        uid,
+        nombres,
+        foto
+        })
+        .then(docRef => {
+            console.log(`UID is => ${docRef.id}`)
+        })
+    }
+    else {
+        const perfil = this.db.collection('perfil').doc(idPerfil)
+
+        perfil.update({
+            uid,
+            nombres,
+            foto
+        })
+        .then(docRef => {
+            console.log(`Se modificó el ID => ${idPerfil}`)
+        })
+    }
   }
 
   obtenerFotoPerfil(user){
@@ -302,14 +317,25 @@ class Post {
         .db
         .collection('perfil')
         .where('uid', '==', user.uid)
-        .get()
-        .then(res => {
+        // tiempo real
+        .onSnapshot(res => {
             if(res.empty){
                 $('#avatar').attr('src', user.photoURL)
             }
             else{
                 res.forEach(foto => {
-                    $('#avatar').attr('src', foto.data().foto)
+                    $('#avatar').attr('src', foto.data()?.foto)
+                    $(".nombrePerfil").attr("style", "display: block;")
+                    $(".nombrePerfil").text(foto.data()?.nombres)
+
+                    // Completar los datos del formulario
+                    $("#idPerfil").val(foto?.id)
+                    $("#nombrePerfil").val(foto.data()?.nombres)
+
+                    $(".determinate").attr("style", "width: 100%")
+                    $("#imagen-perfil").attr("style", "display: block;")
+                    $("#imagen-perfil").attr("src", foto.data()?.foto)
+                    sessionStorage.setItem('imgPerfil', foto.data()?.foto)
                     return
                 })
             }
