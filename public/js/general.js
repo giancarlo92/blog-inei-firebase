@@ -28,7 +28,10 @@ $(() => {
         $('#btnInicioSesion').text('Salir')
         // error que sucede cuando se loguea, a veces no trae foto.
         if(user.photoURL){
-          $('#avatar').attr('src', user.photoURL)
+
+          const post = new Post
+          post.obtenerFotoPerfil(user)
+         
         } else{
           $('#avatar').attr('src', 'imagenes/usuario_auth.png')
         }

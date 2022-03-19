@@ -239,7 +239,7 @@ class Post {
                     </article>`
   }
 
-  subirImagenPost(file, uid){
+  subirImagenPost(file, uid, esPerfil){
     if(file.size > 5 * 1024 * 1024){
         Materialize.toast(`No se puede subir este archivo porque pesa más de 5MB`, 4000)
         return
@@ -266,15 +266,54 @@ class Post {
         task.snapshot.ref.getDownloadURL()
             .then(url => {
                 console.log(url);
-                sessionStorage.setItem('imgNewPost', url)
-                $("#imagen-subida").attr("style", "display: block;")
-                $("#imagen-subida").attr("src", url)
+                if(esPerfil){
+                    $('#avatar').attr('src', url)
+                    // $("modalEditarPerfil").modal("close")
+                    this.guardarFotoPerfil(url, uid)
+                }
+                else {
+                    sessionStorage.setItem('imgNewPost', url)
+                    $("#imagen-subida").attr("style", "display: block;")
+                    $("#imagen-subida").attr("src", url)
+                }
+                
             })
             .catch (error => {
                 Materialize.toast(`Error obteniendo URL => ${error.message}`, 4000)
                 $(".determinate").attr("style", `width: 0%`)
             })
     })  
+  }
+
+  guardarFotoPerfil(url, uid){
+    this.db
+    .collection('perfil')
+    .add({
+      uid,
+      foto: url
+    })
+    .then(docRef => {
+      console.log(`UID is => ${docRef.id}`)
+    })
+  }
+
+  obtenerFotoPerfil(user){
+    this
+        .db
+        .collection('perfil')
+        .where('uid', '==', user.uid)
+        .get()
+        .then(res => {
+            if(res.empty){
+                $('#avatar').attr('src', user.photoURL)
+            }
+            else{
+                res.forEach(foto => {
+                    $('#avatar').attr('src', foto.data().foto)
+                    return
+                })
+            }
+        })
   }
 
   obtenerDesplegableBusqueda(busqueda){

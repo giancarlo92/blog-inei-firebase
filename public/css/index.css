@@ -506,3 +506,9 @@ label
   background-color: #219cca !important;
   color: white;
 }
+
+.verResumen {
+  position: relative;
+  top: 8rem;
+  right: 6rem;
+}

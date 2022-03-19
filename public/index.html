@@ -26,6 +26,7 @@
             <a id="btnInicioSesion" class="modal-trigger waves-effect waves-light btn btnPpal">Iniciar Sesión</a>
             <figure class="header-avatar">
                 <img id="avatar" src="imagenes/usuario.png" alt="Avatar">
+                <span style="display: none;" class="verResumen"><a href="#">Ver Resumen</a></span>
             </figure>
     </header>
     <div class="navbar">
@@ -41,7 +42,7 @@
             </div>
             <div class="search">
                 <input type="text" id="texto-busqueda" placeholder="Buscar">
-                <i class="material-icons">seach</i>
+                <i class="material-icons">search</i>
                 <ul id="data-encontrada"></ul>
             </div>
         </nav>
@@ -258,8 +259,28 @@
                         <p>¿Está seguro que desea eliminar este post?</p>
                     </div>
                     <div class="card-action" style="text-align: center;">
-                        <button class="text-warning" id="eliminar-post-si">Sí</button>
-                        <button class="text-success" id="eliminar-post-no">No</button>
+                        <button class="btn red" id="eliminar-post-si">Sí</button>
+                        <button class="btn btn-success" id="eliminar-post-no">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Perfil -->
+    <div id="modalEditarPerfil" class="modal" style="width: 650px;">
+        <div class="col s12 m7">
+            <div class="card horizontal" style="margin: 0;">
+                <div class="card-stacked">
+                    <div class="card-content">
+                        <div class="progress-panel">
+                            <label for="btnUploadFile">Foto:</label>
+                            <input type="file" value="upload" id="btnSubirPerfil" />
+                            <img src="" id="imagen-perfil" style="display: none;" width="432px" />
+                            <div class="progress">
+                                <div class="determinate" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

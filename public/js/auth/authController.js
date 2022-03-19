@@ -19,8 +19,9 @@ $(() => {
     });
 
     $("#avatar").click(() => {
-        const auth = new Autenticacion
-        auth.cerrarSesion()
+        // const auth = new Autenticacion
+        // auth.cerrarSesion()
+        $("#modalEditarPerfil").modal('open')
     })
 
     $("#authGoogle").click(() => {
