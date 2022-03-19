@@ -67,6 +67,7 @@ class Post {
                         post.data()?.descripcion,
                         post.data()?.videoLink,
                         post.data()?.imagenLink,
+                        post.data()?.calificacion,
                         Utilidad.obtenerFecha(post.data().fecha?.toDate()), //segundos 42342342342
                         post?.id,
                         false
@@ -98,6 +99,7 @@ class Post {
                         post.data()?.descripcion,
                         post.data()?.videoLink,
                         post.data()?.imagenLink,
+                        post.data()?.calificacion,
                         Utilidad.obtenerFecha(post.data().fecha?.toDate()), //segundos 42342342342
                         post?.id,
                         true
@@ -116,6 +118,7 @@ class Post {
         post.data()?.descripcion,
         post.data()?.videoLink,
         post.data()?.imagenLink,
+        post.data()?.calificacion,
         Utilidad.obtenerFecha(post.data().fecha?.toDate()), //segundos 42342342342
         post?.id,
         $("#tituloPost").text() === 'Mis Posts'
@@ -157,6 +160,7 @@ class Post {
     descripcion,
     videoLink,
     imagenLink,
+    calificacion,
     fecha,
     id,
     condicion
@@ -170,17 +174,26 @@ class Post {
         </div>`
     }
 
+    //obtener la calificacion
+    let avgEstrellas = 0
+
+    if(calificacion){
+        const suma = calificacion.reduce((a, b) => a + b.estrellas, 0)
+        const avg = (suma / calificacion.length) || 0
+        avgEstrellas = Math.round(avg)
+    }
+
     if (imagenLink) {
       return /*html*/`<article class="post">
                     <div class="post-titulo">
                         <h5>${titulo}</h5>
                     </div>
                     <div class="post-calificacion">
-                        <a class="post-estrellita-vacia" onclick="colocarEstrellas(1, '${id}')"></a>
-                        <a class="post-estrellita-vacia" onclick="colocarEstrellas(2, '${id}')"></a>
-                        <a class="post-estrellita-vacia" onclick="colocarEstrellas(3, '${id}')"></a>
-                        <a class="post-estrellita-vacia" onclick="colocarEstrellas(4, '${id}')"></a>
-                        <a class="post-estrellita-vacia" onclick="colocarEstrellas(5, '${id}')"></a>
+                        <a class="post-estrellita-${1 <= avgEstrellas ? 'llena' : 'vacia'}" onclick="colocarEstrellas(1, '${id}')"></a>
+                        <a class="post-estrellita-${2 <= avgEstrellas ? 'llena' : 'vacia'}" onclick="colocarEstrellas(2, '${id}')"></a>
+                        <a class="post-estrellita-${3 <= avgEstrellas ? 'llena' : 'vacia'}" onclick="colocarEstrellas(3, '${id}')"></a>
+                        <a class="post-estrellita-${4 <= avgEstrellas ? 'llena' : 'vacia'}" onclick="colocarEstrellas(4, '${id}')"></a>
+                        <a class="post-estrellita-${5 <= avgEstrellas ? 'llena' : 'vacia'}" onclick="colocarEstrellas(5, '${id}')"></a>
                     </div>
                     <div class="post-video">                
                         <img id="imgVideo" src='${imagenLink}' class="post-imagen-video" 
@@ -211,11 +224,11 @@ class Post {
                             <h5>${titulo}</h5>
                         </div>
                         <div class="post-calificacion">
-                            <a class="post-estrellita-vacia" onclick="colocarEstrellas(1, '${id}')"></a>
-                            <a class="post-estrellita-vacia" onclick="colocarEstrellas(2, '${id}')"></a>
-                            <a class="post-estrellita-vacia" onclick="colocarEstrellas(3, '${id}')"></a>
-                            <a class="post-estrellita-vacia" onclick="colocarEstrellas(4, '${id}')"></a>
-                            <a class="post-estrellita-vacia" onclick="colocarEstrellas(5, '${id}')"></a>
+                            <a class="post-estrellita-${1 <= avgEstrellas ? 'llena' : 'vacia'}" onclick="colocarEstrellas(1, '${id}')"></a>
+                            <a class="post-estrellita-${2 <= avgEstrellas ? 'llena' : 'vacia'}" onclick="colocarEstrellas(2, '${id}')"></a>
+                            <a class="post-estrellita-${3 <= avgEstrellas ? 'llena' : 'vacia'}" onclick="colocarEstrellas(3, '${id}')"></a>
+                            <a class="post-estrellita-${4 <= avgEstrellas ? 'llena' : 'vacia'}" onclick="colocarEstrellas(4, '${id}')"></a>
+                            <a class="post-estrellita-${5 <= avgEstrellas ? 'llena' : 'vacia'}" onclick="colocarEstrellas(5, '${id}')"></a>
                         </div>
                         <div class="post-video">
                             <iframe type="text/html" width="500" height="385" src='${videoLink}'
