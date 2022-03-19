@@ -68,7 +68,8 @@ class Post {
                         post.data()?.videoLink,
                         post.data()?.imagenLink,
                         Utilidad.obtenerFecha(post.data().fecha?.toDate()), //segundos 42342342342
-                        null
+                        post?.id,
+                        false
                     )
                     $("#posts").append(postHtml)
                 })
@@ -98,7 +99,8 @@ class Post {
                         post.data()?.videoLink,
                         post.data()?.imagenLink,
                         Utilidad.obtenerFecha(post.data().fecha?.toDate()), //segundos 42342342342
-                        post?.id
+                        post?.id,
+                        true
                     )
                     $("#posts").append(postHtml)
                 })
@@ -115,7 +117,8 @@ class Post {
         post.data()?.videoLink,
         post.data()?.imagenLink,
         Utilidad.obtenerFecha(post.data().fecha?.toDate()), //segundos 42342342342
-        post?.id
+        post?.id,
+        $("#tituloPost").text() === 'Mis Posts'
     )
     $("#posts").append(postHtml)
   }
@@ -126,10 +129,10 @@ class Post {
           <h5>Crea el primer Post a la comunidad</h5>
       </div>
       <div class="post-calificacion">
-          <a class="post-estrellita-llena" href="*"></a>
-          <a class="post-estrellita-llena" href="*"></a>
-          <a class="post-estrellita-llena" href="*"></a>
-          <a class="post-estrellita-llena" href="*"></a>
+          <a class="post-estrellita-vacia" href="*"></a>
+          <a class="post-estrellita-vacia" href="*"></a>
+          <a class="post-estrellita-vacia" href="*"></a>
+          <a class="post-estrellita-vacia" href="*"></a>
           <a class="post-estrellita-vacia" href="*"></a>
       </div>
       <div class="post-video">
@@ -155,17 +158,17 @@ class Post {
     videoLink,
     imagenLink,
     fecha,
-    id
+    id,
+    condicion
   ) {
     
     let botonesAccion = ""
-    if(id != null){
+    if(condicion){
         botonesAccion = /*html*/`<div class="col m6 right-align" style="padding-right: 15px;">
             <a class="btn-floating waves-effect waves-light btnPpal" onclick="editPost('${id}')"><i class="material-icons">edit</i></a>
             <a class="btn-floating waves-effect waves-light red" onclick="deletePost('${id}')"><i class="material-icons">delete</i></a>
         </div>`
     }
-
 
     if (imagenLink) {
       return /*html*/`<article class="post">
@@ -173,11 +176,11 @@ class Post {
                         <h5>${titulo}</h5>
                     </div>
                     <div class="post-calificacion">
-                        <a class="post-estrellita-llena" href="*"></a>
-                        <a class="post-estrellita-llena" href="*"></a>
-                        <a class="post-estrellita-llena" href="*"></a>
-                        <a class="post-estrellita-llena" href="*"></a>
-                        <a class="post-estrellita-vacia" href="*"></a>
+                        <a class="post-estrellita-vacia" onclick="colocarEstrellas(1, '${id}')"></a>
+                        <a class="post-estrellita-vacia" onclick="colocarEstrellas(2, '${id}')"></a>
+                        <a class="post-estrellita-vacia" onclick="colocarEstrellas(3, '${id}')"></a>
+                        <a class="post-estrellita-vacia" onclick="colocarEstrellas(4, '${id}')"></a>
+                        <a class="post-estrellita-vacia" onclick="colocarEstrellas(5, '${id}')"></a>
                     </div>
                     <div class="post-video">                
                         <img id="imgVideo" src='${imagenLink}' class="post-imagen-video" 
@@ -208,11 +211,11 @@ class Post {
                             <h5>${titulo}</h5>
                         </div>
                         <div class="post-calificacion">
-                            <a class="post-estrellita-llena" href="*"></a>
-                            <a class="post-estrellita-llena" href="*"></a>
-                            <a class="post-estrellita-llena" href="*"></a>
-                            <a class="post-estrellita-llena" href="*"></a>
-                            <a class="post-estrellita-vacia" href="*"></a>
+                            <a class="post-estrellita-vacia" onclick="colocarEstrellas(1, '${id}')"></a>
+                            <a class="post-estrellita-vacia" onclick="colocarEstrellas(2, '${id}')"></a>
+                            <a class="post-estrellita-vacia" onclick="colocarEstrellas(3, '${id}')"></a>
+                            <a class="post-estrellita-vacia" onclick="colocarEstrellas(4, '${id}')"></a>
+                            <a class="post-estrellita-vacia" onclick="colocarEstrellas(5, '${id}')"></a>
                         </div>
                         <div class="post-video">
                             <iframe type="text/html" width="500" height="385" src='${videoLink}'
@@ -360,5 +363,51 @@ class Post {
                 })
             }
         })
+  }
+
+  async guardarCalificacion(numeroEstrellas, id){
+      const refPost = this.db.collection("posts").doc(id)
+      const post = await refPost.get()
+
+      // Usuario logueado
+      const user = firebase.auth().currentUser
+
+      // Verificar si ya voto
+      const existeCalificacion = post.data()?.calificacion
+
+      if(!existeCalificacion){
+        return refPost.update({
+            calificacion: [{
+                idUser: user.uid,
+                estrellas: numeroEstrellas
+            }]
+        })
+        .catch(error => {
+            console.log(`Error al calificar el post ${error.message}`);
+        })
+      }
+      else {
+          const existeUsuario = post.data().calificacion.findIndex(x => x.idUser == user.uid)
+          let calificacion = post.data().calificacion // 2 elementos
+          if(existeUsuario > -1){
+            //   Reemplazar la votacion que ya tenia
+              calificacion[existeUsuario] = {
+                  idUser: user.uid,
+                  estrellas: numeroEstrellas
+              }
+          } else {
+              calificacion = [...calificacion, { // agregar 1 mas, es decir 3 elementos
+                idUser: user.uid,
+                estrellas: numeroEstrellas
+              }]
+          }
+
+          return refPost.update({
+              calificacion
+          })
+          .catch(error => {
+            console.log(`Error al calificar el post ${error.message}`);
+          })
+      }
   }
 }

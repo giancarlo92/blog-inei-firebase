@@ -513,3 +513,7 @@ label
   width: 80px;
   text-align: center;
 }
+
+.post-calificacion a {
+  cursor: pointer !important;
+}
